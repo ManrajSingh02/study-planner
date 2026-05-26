@@ -1,6 +1,7 @@
 import { createContext, useContext, useState } from 'react'
 import { NotificationContext } from './NotificationContext'
 
+const AUTH_STORAGE_KEY = 'studyPlannerUser'
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5002/api'
 const API_URL = API_BASE_URL.endsWith('/api')
   ? API_BASE_URL
@@ -8,9 +9,29 @@ const API_URL = API_BASE_URL.endsWith('/api')
 
 export const AuthContext = createContext()
 
+const getStoredUser = () => {
+  try {
+    return JSON.parse(localStorage.getItem(AUTH_STORAGE_KEY))
+  } catch {
+    localStorage.removeItem(AUTH_STORAGE_KEY)
+    return null
+  }
+}
+
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null)
+  const [user, setUser] = useState(getStoredUser)
   const { notify } = useContext(NotificationContext)
+
+  const saveUser = (nextUser) => {
+    setUser(nextUser)
+
+    if (nextUser) {
+      localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(nextUser))
+      return
+    }
+
+    localStorage.removeItem(AUTH_STORAGE_KEY)
+  }
 
   const authRequest = async (path, options = {}) => {
     const response = await fetch(`${API_URL}${path}`, {
@@ -37,7 +58,7 @@ export const AuthProvider = ({ children }) => {
       body: JSON.stringify({ email, password })
     })
       .then((data) => {
-        setUser(data)
+        saveUser(data)
         notify({
           title: 'Login successful',
           message: `Welcome back, ${data.name}.`,
@@ -53,7 +74,7 @@ export const AuthProvider = ({ children }) => {
       body: JSON.stringify({ name, email, password })
     })
       .then((data) => {
-        setUser(data)
+        saveUser(data)
         notify({
           title: 'Account created',
           message: 'Your study planner is ready.',
@@ -69,19 +90,19 @@ export const AuthProvider = ({ children }) => {
       message: 'Your session has ended.',
       tone: 'info'
     })
-    setUser(null)
+    saveUser(null)
   }
 
   const updateUser = (updates) => {
-    setUser((current) => ({ ...current, ...updates }))
-
     if (!user?.token) return
+
+    saveUser({ ...user, ...updates })
 
     authRequest('/auth/profile', {
       method: 'PUT',
       body: JSON.stringify(updates)
     })
-      .then(setUser)
+      .then(saveUser)
       .catch((error) => console.error(error.message))
   }
 

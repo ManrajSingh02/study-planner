@@ -1,5 +1,5 @@
 import { useContext, useState } from 'react'
-import { Link, useNavigate } from 'react-router'
+import { Link, Navigate, useNavigate } from 'react-router'
 import Button from '../components/atoms/Button/Button'
 import Input from '../components/atoms/Input/Input'
 import { AuthContext } from '../context/AuthContext'
@@ -7,10 +7,14 @@ import { validateAuth } from '../utils/validateForm'
 import heroImage from '../assets/hero.png'
 
 const Login = () => {
-  const { login } = useContext(AuthContext)
+  const { user, login } = useContext(AuthContext)
   const navigate = useNavigate()
   const [form, setForm] = useState({ email: '', password: '' })
   const [errors, setErrors] = useState({})
+
+  if (user?.token) {
+    return <Navigate to='/dashboard' replace />
+  }
 
   const handleSubmit = async (event) => {
     event.preventDefault()
