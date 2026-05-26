@@ -1,7 +1,10 @@
 import { createContext, useContext, useState } from 'react'
 import { NotificationContext } from './NotificationContext'
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5002/api'
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5002/api'
+const API_URL = API_BASE_URL.endsWith('/api')
+  ? API_BASE_URL
+  : `${API_BASE_URL.replace(/\/$/, '')}/api`
 
 export const AuthContext = createContext()
 
