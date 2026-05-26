@@ -1,7 +1,7 @@
 {
   "name": "server",
   "version": "1.0.0",
-  "description": "Simple backend for the study planner app.",
+  "description": "Simple backend for the study planner.",
   "license": "ISC",
   "author": "mani",
   "type": "module",
