@@ -1,4 +1,4 @@
-import { priorityColors } from '../constants/colors'
+import { priorityColors } from '../constants'
 
 const getPriorityColor = (priority) => {
   return priorityColors[priority] || 'bg-slate-100 text-slate-700 border-slate-200'

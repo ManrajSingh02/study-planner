@@ -1,7 +1,14 @@
-import EmptyState from '../../molecules/EmptyState/EmptyState'
-import TaskCard from '../../molecules/TaskCard/TaskCard'
+import EmptyState from '../molecules/EmptyState.jsx'
+import TaskCard from '../molecules/TaskCard.jsx'
 
-const TaskList = ({ tasks, onDelete, onToggle, onEdit, onDuplicate, onPin }) => {
+const TaskList = ({
+  tasks,
+  onDelete,
+  onToggle,
+  onEdit,
+  onDuplicate,
+  onPin
+}) => {
   if (!tasks.length) {
     return (
       <EmptyState

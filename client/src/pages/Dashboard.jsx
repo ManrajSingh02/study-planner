@@ -1,7 +1,7 @@
 import { useContext } from "react";
-import Card from "../components/atoms/Card/Card";
-import StatsCard from "../components/molecules/StatsCard/StatsCard";
-import DashboardLayout from "../layouts/DashboardLayout";
+import Card from "../components/atoms/Card";
+import StatsCard from "../components/molecules/StatsCard";
+import DashboardLayout from "../components/DashboardLayout";
 import { TaskContext } from "../context/TaskContext";
 import formatDate from "../utils/formatDate";
 import { getDeadlineLabel } from "../utils/taskHelpers";

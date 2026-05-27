@@ -1,5 +1,4 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react'
-import { defaultCategories } from '../data/dummyTasks'
 import { AuthContext } from './AuthContext'
 import { NotificationContext } from './NotificationContext'
 import calculateProgress from '../utils/calculateProgress'
@@ -75,25 +74,7 @@ export const TaskProvider = ({ children }) => {
 
         setTasks(taskData.map(mapTask))
 
-        if (categoryData.length) {
-          setCategories(categoryData.map(mapCategory))
-          return
-        }
-
-        const createdCategories = await Promise.all(
-          defaultCategories.map((category) =>
-            request('/categories', {
-              method: 'POST',
-              body: JSON.stringify({
-                name: category.name,
-                color: category.color,
-                goal: category.goal
-              })
-            })
-          )
-        )
-
-        setCategories(createdCategories.map(mapCategory))
+        setCategories(categoryData.map(mapCategory))
       } catch (error) {
         setApiError(error.message)
         console.error(error.message)
@@ -122,7 +103,7 @@ export const TaskProvider = ({ children }) => {
         setTasks((current) => [mapTask(createdTask), ...current])
         notify({
           title: 'Task added',
-          message: `${createdTask.title} was saved to MongoDB.`,
+          message: `${createdTask.title} was added.`,
           tone: 'success'
         })
       })
@@ -209,16 +190,29 @@ export const TaskProvider = ({ children }) => {
       })
   }
 
+  const deleteCategory = (id) => {
+    setCategories((current) => current.filter((category) => category.id !== id))
+
+    request(`/categories/${id}`, { method: 'DELETE' }).catch((error) => {
+      setApiError(error.message)
+      console.error(error.message)
+    })
+  }
+
   const setNotes = (nextNotes) => {
     const value = typeof nextNotes === 'function' ? nextNotes(notes) : nextNotes
     setNotesState(value)
     updateUser({ notes: value })
   }
 
-  const setGoals = (nextGoals) => {
+  const setGoals = (nextGoals, options = {}) => {
+    const { persist = true } = options
     const value = typeof nextGoals === 'function' ? nextGoals(goals) : nextGoals
     setGoalsState(value)
-    updateUser({ goals: value })
+
+    if (persist) {
+      updateUser({ goals: value })
+    }
   }
 
   const progress = useMemo(() => calculateProgress(tasks, categories), [tasks, categories])
@@ -252,7 +246,8 @@ export const TaskProvider = ({ children }) => {
         deleteTask,
         toggleTask,
         duplicateTask,
-        addCategory
+        addCategory,
+        deleteCategory
       }}
     >
       {children}

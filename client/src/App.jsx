@@ -1,24 +1,24 @@
-import { Route, Routes } from 'react-router'
-import Landing from './pages/Landing'
-import Login from './pages/Login'
-import Register from './pages/Register'
-import Dashboard from './pages/Dashboard'
-import Tasks from './pages/Tasks'
-import Calendar from './pages/Calendar'
-import Categories from './pages/Categories'
-import Profile from './pages/Profile'
-import NotFound from './pages/NotFound'
-import ProtectedRoute from './routes/ProtectedRoute'
+import { Route, Routes } from "react-router";
+import Landing from "./pages/Landing";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Dashboard from "./pages/Dashboard";
+import Tasks from "./pages/Tasks";
+import Calendar from "./pages/Calendar";
+import Categories from "./pages/Categories";
+import Profile from "./pages/Profile";
+import NotFound from "./pages/NotFound";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 const App = () => {
   return (
     <Routes>
-      <Route path='/' element={<Landing />} />
-      <Route path='/login' element={<Login />} />
-      <Route path='/register' element={<Register />} />
+      <Route path="/" element={<Landing />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
 
       <Route
-        path='/dashboard'
+        path="/dashboard"
         element={
           <ProtectedRoute>
             <Dashboard />
@@ -26,7 +26,7 @@ const App = () => {
         }
       />
       <Route
-        path='/tasks'
+        path="/tasks"
         element={
           <ProtectedRoute>
             <Tasks />
@@ -34,7 +34,7 @@ const App = () => {
         }
       />
       <Route
-        path='/calendar'
+        path="/calendar"
         element={
           <ProtectedRoute>
             <Calendar />
@@ -42,7 +42,7 @@ const App = () => {
         }
       />
       <Route
-        path='/categories'
+        path="/categories"
         element={
           <ProtectedRoute>
             <Categories />
@@ -50,7 +50,7 @@ const App = () => {
         }
       />
       <Route
-        path='/profile'
+        path="/profile"
         element={
           <ProtectedRoute>
             <Profile />
@@ -58,9 +58,9 @@ const App = () => {
         }
       />
 
-      <Route path='*' element={<NotFound />} />
+      <Route path="*" element={<NotFound />} />
     </Routes>
-  )
-}
+  );
+};
 
-export default App
+export default App;
