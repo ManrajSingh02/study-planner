@@ -66,9 +66,9 @@ const TaskCard = ({ task, onDelete, onToggle, onEdit, onDuplicate, onPin }) => {
           <Button variant="ghost" onClick={() => onPin(task.id, !task.pinned)}>
             {task.pinned ? "Unpin" : "Pin"}
           </Button>
-          <Button variant="danger" onClick={() => onDelete(task.id)}>
-            Delete
-          </Button>
+         <Button variant="danger" onClick={onDelete}>
+  Delete
+</Button>
         </div>
       </div>
     </Card>

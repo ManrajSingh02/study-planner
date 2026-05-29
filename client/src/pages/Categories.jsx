@@ -1,4 +1,5 @@
 import { useContext, useState } from "react";
+import { useNavigate } from "react-router";
 import Button from "../components/atoms/Button";
 import Card from "../components/atoms/Card";
 import Input from "../components/atoms/Input";
@@ -8,11 +9,15 @@ import { TaskContext } from "../context/TaskContext";
 const Categories = () => {
   const { categories, progress, addCategory, deleteCategory } =
     useContext(TaskContext);
+
+  const navigate = useNavigate();
+
   const [name, setName] = useState("");
   const [error, setError] = useState("");
 
   const handleAdd = (event) => {
     event.preventDefault();
+
     const normalizedName = name.trim();
     const isValidName = /^[a-zA-Z][a-zA-Z0-9 ]{1,39}$/.test(normalizedName);
 
@@ -41,11 +46,21 @@ const Categories = () => {
     setError("");
   };
 
+  const handleCategoryClick = (subjectName) => {
+    navigate("/tasks", {
+      state: {
+        subject: subjectName,
+      },
+    });
+  };
+
   return (
     <DashboardLayout>
       <div className="space-y-6">
         <div>
-          <h1 className="text-3xl font-black text-slate-950">Categories</h1>
+          <h1 className="text-3xl font-black text-slate-950">
+            Categories
+          </h1>
           <p className="mt-1 text-slate-500">
             Organize work by subject and track subject-wise progress.
           </p>
@@ -68,7 +83,10 @@ const Categories = () => {
                 error={error}
               />
             </div>
-            <Button type="submit">Add category</Button>
+
+            <Button type="submit">
+              Add category
+            </Button>
           </form>
         </Card>
 
@@ -79,24 +97,35 @@ const Categories = () => {
             );
 
             return (
-              <Card key={category.id}>
+              <Card
+                key={category.id}
+                className="cursor-pointer transition-all duration-200 hover:-translate-y-1 hover:shadow-xl"
+                onClick={() => handleCategoryClick(category.name)}
+              >
                 <div className={`h-2 rounded-full ${category.color}`} />
+
                 <div className="mt-4 flex items-start justify-between gap-3">
                   <h2 className="text-xl font-bold text-slate-950">
                     {category.name}
                   </h2>
+
                   <button
                     type="button"
-                    onClick={() => deleteCategory(category.id)}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      deleteCategory(category.id);
+                    }}
                     className="text-sm font-semibold text-red-600 hover:text-red-700"
                   >
                     Delete
                   </button>
                 </div>
+
                 <p className="mt-1 text-sm text-slate-500">
                   {subject?.completed || 0} of {subject?.total || 0} tasks
                   complete
                 </p>
+
                 <div className="mt-4 rounded-lg bg-slate-100 p-3 text-sm font-semibold text-slate-700">
                   {subject?.percent || 0}% complete
                 </div>

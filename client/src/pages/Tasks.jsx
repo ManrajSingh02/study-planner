@@ -1,4 +1,5 @@
-import { useContext, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
+import { useLocation } from "react-router";
 import Card from "../components/atoms/Card";
 import FilterBar from "../components/molecules/FilterBar";
 import TaskForm from "../components/molecules/TaskForm";
@@ -19,7 +20,11 @@ const Tasks = () => {
     toggleTask,
     duplicateTask,
   } = useContext(TaskContext);
+
+  const location = useLocation();
+
   const [editingTask, setEditingTask] = useState(null);
+
   const [filters, setFilters] = useState({
     search: "",
     subject: "All",
@@ -29,8 +34,20 @@ const Tasks = () => {
     sortBy: "Nearest deadline",
   });
 
+  useEffect(() => {
+    if (location.state?.subject) {
+      setFilters((prev) => ({
+        ...prev,
+        subject: location.state.subject,
+      }));
+    }
+  }, [location.state]);
+
   const filteredTasks = useMemo(() => {
-    return sortTasks(filterTasks(tasks, filters), filters.sortBy);
+    return sortTasks(
+      filterTasks(tasks, filters),
+      filters.sortBy,
+    );
   }, [tasks, filters]);
 
   const handleSubmit = (task) => {
@@ -47,7 +64,10 @@ const Tasks = () => {
     <DashboardLayout>
       <div className="space-y-6">
         <div>
-          <h1 className="text-3xl font-black text-slate-950">Tasks</h1>
+          <h1 className="text-3xl font-black text-slate-950">
+            Tasks
+          </h1>
+
           <p className="mt-1 text-slate-500">
             Add, edit, duplicate, pin, filter, and complete study tasks.
           </p>
@@ -64,6 +84,7 @@ const Tasks = () => {
             <h2 className="text-xl font-bold text-slate-950">
               {editingTask ? "Edit task" : "Add task"}
             </h2>
+
             <div className="mt-5">
               <TaskForm
                 categories={categories}
@@ -80,13 +101,16 @@ const Tasks = () => {
               onChange={setFilters}
               categories={categories}
             />
+
             <TaskList
               tasks={filteredTasks}
               onDelete={deleteTask}
               onToggle={toggleTask}
               onEdit={setEditingTask}
               onDuplicate={duplicateTask}
-              onPin={(id, pinned) => updateTask(id, { pinned })}
+              onPin={(id, pinned) =>
+                updateTask(id, { pinned })
+              }
             />
           </div>
         </div>

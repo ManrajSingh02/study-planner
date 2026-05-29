@@ -12,7 +12,12 @@ const initialForm = {
   pinned: false,
 };
 
-const TaskForm = ({ categories, onSubmit, editingTask, onCancel }) => {
+const TaskForm = ({
+  categories,
+  onSubmit,
+  editingTask,
+  onCancel,
+}) => {
   const [form, setForm] = useState(initialForm);
   const [errors, setErrors] = useState({});
 
@@ -36,17 +41,60 @@ const TaskForm = ({ categories, onSubmit, editingTask, onCancel }) => {
 
   const handleChange = (event) => {
     const { name, value, type, checked } = event.target;
+
     setForm((current) => ({
       ...current,
       [name]: type === "checkbox" ? checked : value,
     }));
-    setErrors((current) => ({ ...current, [name]: "" }));
+
+    setErrors((current) => ({
+      ...current,
+      [name]: "",
+    }));
+  };
+
+  const handleDeadlineChange = (event) => {
+    const selectedDate = event.target.value;
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const pickedDate = new Date(selectedDate);
+    pickedDate.setHours(0, 0, 0, 0);
+
+    if (pickedDate < today) {
+      setErrors((current) => ({
+        ...current,
+        deadline: "Please select today or a future date",
+      }));
+    } else {
+      setErrors((current) => ({
+        ...current,
+        deadline: "",
+      }));
+    }
+
+    handleChange(event);
   };
 
   const handleSubmit = (event) => {
     event.preventDefault();
 
     const nextErrors = validateTask(form);
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (form.deadline) {
+      const selectedDate = new Date(form.deadline);
+      selectedDate.setHours(0, 0, 0, 0);
+
+      if (selectedDate < today) {
+        nextErrors.deadline =
+          "Please select today or a future date";
+      }
+    }
+
     setErrors(nextErrors);
 
     if (Object.keys(nextErrors).length) return;
@@ -89,14 +137,20 @@ const TaskForm = ({ categories, onSubmit, editingTask, onCancel }) => {
             className="rounded-lg border border-slate-200 bg-white px-3 py-2.5 outline-none"
           >
             {categories.map((category) => (
-              <option key={category.id} value={category.name}>
+              <option
+                key={category.id}
+                value={category.name}
+              >
                 {category.name}
               </option>
             ))}
           </select>
-          {errors.subject ? (
-            <span className="text-xs text-red-500">{errors.subject}</span>
-          ) : null}
+
+          {errors.subject && (
+            <span className="text-xs text-red-500">
+              {errors.subject}
+            </span>
+          )}
         </label>
 
         <Input
@@ -104,7 +158,8 @@ const TaskForm = ({ categories, onSubmit, editingTask, onCancel }) => {
           name="deadline"
           type="date"
           value={form.deadline}
-          onChange={handleChange}
+          min={new Date().toISOString().split("T")[0]}
+          onChange={handleDeadlineChange}
           error={errors.deadline}
         />
       </div>
@@ -126,6 +181,7 @@ const TaskForm = ({ categories, onSubmit, editingTask, onCancel }) => {
 
         <label className="flex flex-col gap-2 text-sm font-medium text-slate-700">
           Pin task
+
           <span className="flex items-center gap-3 rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm font-medium text-slate-700">
             <input
               type="checkbox"
@@ -134,6 +190,7 @@ const TaskForm = ({ categories, onSubmit, editingTask, onCancel }) => {
               onChange={handleChange}
               className="h-4 w-4"
             />
+
             Pin this task
           </span>
         </label>
@@ -141,13 +198,20 @@ const TaskForm = ({ categories, onSubmit, editingTask, onCancel }) => {
 
       <div className="flex flex-wrap gap-2">
         <Button type="submit">
-          {editingTask ? "Save changes" : "Add task"}
+          {editingTask
+            ? "Save changes"
+            : "Add task"}
         </Button>
-        {editingTask ? (
-          <Button type="button" variant="secondary" onClick={onCancel}>
+
+        {editingTask && (
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={onCancel}
+          >
             Cancel
           </Button>
-        ) : null}
+        )}
       </div>
     </form>
   );
