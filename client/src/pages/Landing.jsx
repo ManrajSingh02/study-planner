@@ -30,9 +30,16 @@ const Landing = () => {
       <div className="absolute bottom-0 right-0 h-72 w-72 rounded-full bg-purple-300/20 blur-3xl"></div>
 
       <div className="relative z-10 mx-auto flex max-w-7xl items-center justify-between px-4 py-5">
-        <h2 className="text-2xl font-black text-indigo-600 [html.dark_&]:text-indigo-400">
-          StudyMate
-        </h2>
+        <div className="flex items-center gap-3">
+          <img
+            src="/favicon.svg"
+            alt="StudyMate"
+            className="h-11 w-11 rounded-2xl shadow-lg shadow-indigo-500/20"
+          />
+          <h2 className="text-2xl font-black text-indigo-600 [html.dark_&]:text-indigo-400">
+            StudyMate
+          </h2>
+        </div>
 
         <Button
           variant="secondary"
